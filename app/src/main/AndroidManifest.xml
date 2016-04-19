@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="edu.gvsu.scheskecmail.python">
+    package="edu.gvsu.cis.radeckia.python">
 
     <application
         android:allowBackup="true"
@@ -18,10 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Difficulty_Settings"
-            android:label="@string/title_activity_difficulty__settings"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

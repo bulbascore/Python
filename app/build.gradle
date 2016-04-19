@@ -2,10 +2,10 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "edu.gvsu.scheskecmail.python"
+        applicationId "edu.gvsu.cis.radeckia.python"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
