@@ -12,9 +12,10 @@
     tools:context="edu.gvsu.cis.radeckia.python.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TableLayout
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"></TableLayout>
+        android:layout_centerHorizontal="true"
+        android:id="@+id/gridLayout"></GridLayout>
 </RelativeLayout>
