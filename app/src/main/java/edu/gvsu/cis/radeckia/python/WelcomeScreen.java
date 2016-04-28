@@ -2,7 +2,9 @@ package edu.gvsu.cis.radeckia.python;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -24,23 +26,26 @@ GoogleApiClient.OnConnectionFailedListener {
     private Button signOut;
     private Button playGame;
     private Button achievements;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient = null;
     private boolean mResolvingConnectionFailure = false;
     private boolean mSignInClicked = false;
     private int REQUEST_ACHIEVEMENTS = 123;
     private final int GAMES_WON = 121;
     private static int RC_SIGN_IN = 9001;
+    private SharedPreferences prefs;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //mGoogleApiClient.connect();
         setContentView(R.layout.activity_welcome_screen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         signIn = (SignInButton) findViewById(R.id.signIn);
         signOut = (Button) findViewById(R.id.signOut);
         achievements = (Button) findViewById(R.id.achievements);
         playGame = (Button) findViewById(R.id.playGame);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
         setSupportActionBar(toolbar);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -51,7 +56,7 @@ GoogleApiClient.OnConnectionFailedListener {
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        playGame.setOnClickListener(new View.OnClickListener() {
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -200,5 +205,23 @@ GoogleApiClient.OnConnectionFailedListener {
             Games.Achievements.increment(mGoogleApiClient, getString(R.string.unstoppable), counter);
             Games.Achievements.increment(mGoogleApiClient, getString(R.string.godlike), counter);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences.Editor ped = prefs.edit();
+        ped.commit();
     }
 }

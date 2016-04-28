@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -45,8 +49,11 @@ import edu.gvsu.cis.radeckia.python.Disks;
 import edu.gvsu.cis.radeckia.python.Player;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener {
 
+    private Disks d;
+    private Main m = new Main();
+    private MainActivity mA = new MainActivity();
     private int gameCols = 7;
     private int gameRows = 6;
     private GameLogic gameLogic;
@@ -66,7 +73,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Disks disks[][] = new Disks[cols][rows];
     private Player player1;
     private Player player2;
+    private String player;
     private boolean gameDone = false;
+    private int rowOneStatus = 6;
+    private int rowTwoStatus = 6;
+    private int rowThreeStatus = 6;
+    private int rowFourStatus = 6;
+    private int rowFiveStatus = 6;
+    private int rowSixStatus = 6;
+    private int rowSevenStatus = 6;
+    /*Drawable p1_tile_drawable = getResources().getDrawable(R.drawable.p1_tile_occupied);
+    Drawable p2_tile_drawable = getResources().getDrawable(R.drawable.p2_tile_occupied);
+    Resources res = getResources();
+    Bitmap p1_bit = BitmapFactory.decodeResource(res, R.drawable.p1_tile_occupied);
+    Bitmap p2_bit = BitmapFactory.decodeResource(res, R.drawable.p2_tile_occupied);
+    Canvas canvas1 = new Canvas(p1_bit.copy(Bitmap.Config.ARGB_8888, true));
+    Canvas canvas2 = new Canvas(p1_bit.copy(Bitmap.Config.ARGB_8888, true));*/
 
     /*private void reset() {
         Date increment = new Date();
@@ -105,17 +127,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // go to game screen
     }
 
-    public void placePiece(String Player, int col){
+    public void placePiece(String Player, int col) {
         int i = col;
 
-        if(legalMove(i)){
+        if (legalMove(i)) {
             for (int k = disks[i].length - 1; k > 0; k++) {
-                if (disks[k][i] == null){
-                    Disks d = new Disks (Player, k, i);
+                if (disks[k][i] == null) {
+                    Disks d = new Disks(Player, k, i);
                     disks[k][i] = d;
 
-                    if(hasWon(k, i)){
-                        gameDone =  true;
+                    if (hasWon(k, i)) {
+                        gameDone = true;
                         endGame();
                     }
                     //TODO add more work to update the UI
@@ -126,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //checks if the move is possible
-    public boolean legalMove(int i){
+    public boolean legalMove(int i) {
         if (gameDone == false) {
             if (disks[0][i] != null) {
                 return false;
@@ -135,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    public void endGame(){
+    public void endGame() {
         int GAMES_WON = 0;
         Intent launchme = new Intent(MainActivity.this, ResultsScreen.class);
         launchme.putExtra("winner", GAMES_WON);
@@ -143,32 +165,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //returns how many pieces there are in a row.
-    public boolean hasWon(int r, int c){
+    public boolean hasWon(int r, int c) {
 
         int i = 1;
         int t = 1;
         String s = disks[r][c].getPlayer();
 
         //checks horizontal options
-        if (disks[r+1][c].getPlayer().equals(s)&& r+1 < disks.length){
+        if (disks[r + 1][c].getPlayer().equals(s) && r + 1 < disks.length) {
             i++;
-            if(disks[r+2][c].getPlayer().equals(s) && r+2 < disks.length){
+            if (disks[r + 2][c].getPlayer().equals(s) && r + 2 < disks.length) {
                 i++;
-                if(disks[r+3][c].getPlayer().equals(s)&& r+3 < disks.length){
+                if (disks[r + 3][c].getPlayer().equals(s) && r + 3 < disks.length) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
                 }
             }
-            if(disks[r-1][c].getPlayer().equals(s) && r-1 >=0){
+            if (disks[r - 1][c].getPlayer().equals(s) && r - 1 >= 0) {
                 i++;
-                if (i == 4){
+                if (i == 4) {
                     return true;
                 }
-                if(disks[r-2][c].getPlayer().equals(s) && r-2 >=0){
+                if (disks[r - 2][c].getPlayer().equals(s) && r - 2 >= 0) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
 
@@ -176,13 +198,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         }
-        if(disks[r-1][c].getPlayer().equals(s) && r-1 >=0){
+        if (disks[r - 1][c].getPlayer().equals(s) && r - 1 >= 0) {
             i++;
-            if(disks[r-2][c].getPlayer().equals(s) && r-2 >= 0){
+            if (disks[r - 2][c].getPlayer().equals(s) && r - 2 >= 0) {
                 i++;
-                if(disks[r-3][c].getPlayer().equals(s)&& r-3 >=0){
+                if (disks[r - 3][c].getPlayer().equals(s) && r - 3 >= 0) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
                 }
@@ -190,25 +212,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         //checks for diaginal left
-        if (disks[r+1][c+1].getPlayer().equals(s)&& r+1 < disks.length && c+1 < disks[r].length){
+        if (disks[r + 1][c + 1].getPlayer().equals(s) && r + 1 < disks.length && c + 1 < disks[r].length) {
             i++;
-            if (disks[r+2][c+2].getPlayer().equals(s)&& r+2 < disks.length && c+2 < disks[r].length){
+            if (disks[r + 2][c + 2].getPlayer().equals(s) && r + 2 < disks.length && c + 2 < disks[r].length) {
                 i++;
-                if (disks[r+3][c+3].getPlayer().equals(s)&& r+3 < disks.length && c+3 < disks[r].length){
+                if (disks[r + 3][c + 3].getPlayer().equals(s) && r + 3 < disks.length && c + 3 < disks[r].length) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
                 }
             }
-            if(disks[r-1][c-i].getPlayer().equals(s) && r-1 >=0){
+            if (disks[r - 1][c - i].getPlayer().equals(s) && r - 1 >= 0) {
                 i++;
-                if (i == 4){
+                if (i == 4) {
                     return true;
                 }
-                if(disks[r-2][c-2].getPlayer().equals(s) && r-2 >=0 && c-i >=0){
+                if (disks[r - 2][c - 2].getPlayer().equals(s) && r - 2 >= 0 && c - i >= 0) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
 
@@ -216,13 +238,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         }
-        if(disks[r-1][c-1].getPlayer().equals(s) && r-1 >=0 && c-1 >=0){
+        if (disks[r - 1][c - 1].getPlayer().equals(s) && r - 1 >= 0 && c - 1 >= 0) {
             i++;
-            if(disks[r-2][c-2].getPlayer().equals(s) && r-2 >=0 && c-2 >=0){
+            if (disks[r - 2][c - 2].getPlayer().equals(s) && r - 2 >= 0 && c - 2 >= 0) {
                 i++;
-                if(disks[r-3][c-3].getPlayer().equals(s) && r-3 >=0 && c-3 >=0){
+                if (disks[r - 3][c - 3].getPlayer().equals(s) && r - 3 >= 0 && c - 3 >= 0) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
                 }
@@ -230,25 +252,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         //checks for diaginal right
-        if (disks[r+1][c-1].getPlayer().equals(s)&& r+1 < disks.length && c+1 >=0){
+        if (disks[r + 1][c - 1].getPlayer().equals(s) && r + 1 < disks.length && c + 1 >= 0) {
             i++;
-            if (disks[r+2][c-2].getPlayer().equals(s)&& r+2 < disks.length && c+2 >=0){
+            if (disks[r + 2][c - 2].getPlayer().equals(s) && r + 2 < disks.length && c + 2 >= 0) {
                 i++;
-                if (disks[r+3][c-3].getPlayer().equals(s)&& r+3 < disks.length && c+3 >=0){
+                if (disks[r + 3][c - 3].getPlayer().equals(s) && r + 3 < disks.length && c + 3 >= 0) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
                 }
             }
-            if(disks[r-1][c+i].getPlayer().equals(s) && r-1 >=0 && c+1 < disks[r].length){
+            if (disks[r - 1][c + i].getPlayer().equals(s) && r - 1 >= 0 && c + 1 < disks[r].length) {
                 i++;
-                if (i == 4){
+                if (i == 4) {
                     return true;
                 }
-                if(disks[r-2][c+2].getPlayer().equals(s) && r-2 >=0 && c+2 < disks[r].length){
+                if (disks[r - 2][c + 2].getPlayer().equals(s) && r - 2 >= 0 && c + 2 < disks[r].length) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
 
@@ -256,13 +278,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         }
-        if(disks[r-1][c+1].getPlayer().equals(s) && r+1 >=0 && c+1 < disks[r].length){
+        if (disks[r - 1][c + 1].getPlayer().equals(s) && r + 1 >= 0 && c + 1 < disks[r].length) {
             i++;
-            if(disks[r-2][c+2].getPlayer().equals(s) && r+2 >=0 && c+2 < disks[r].length){
+            if (disks[r - 2][c + 2].getPlayer().equals(s) && r + 2 >= 0 && c + 2 < disks[r].length) {
                 i++;
-                if(disks[r-3][c+3].getPlayer().equals(s) && r+3 >=0 && c+3 < disks[r].length){
+                if (disks[r - 3][c + 3].getPlayer().equals(s) && r + 3 >= 0 && c + 3 < disks[r].length) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
                 }
@@ -270,25 +292,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         //checks for vertical
-        if (disks[r][c+1].getPlayer().equals(s)&& c+1 < disks.length){
+        if (disks[r][c + 1].getPlayer().equals(s) && c + 1 < disks.length) {
             i++;
-            if(disks[r][c+2].getPlayer().equals(s) && c+2 < disks.length){
+            if (disks[r][c + 2].getPlayer().equals(s) && c + 2 < disks.length) {
                 i++;
-                if(disks[r][c+3].getPlayer().equals(s)&& c+3 < disks.length){
+                if (disks[r][c + 3].getPlayer().equals(s) && c + 3 < disks.length) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
                 }
             }
-            if(disks[r][c-1].getPlayer().equals(s) && c-1 >=0){
+            if (disks[r][c - 1].getPlayer().equals(s) && c - 1 >= 0) {
                 i++;
-                if (i == 4){
+                if (i == 4) {
                     return true;
                 }
-                if(disks[r-2][c].getPlayer().equals(s) && c-2 >=0){
+                if (disks[r - 2][c].getPlayer().equals(s) && c - 2 >= 0) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
 
@@ -296,22 +318,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         }
-        if(disks[r][c-1].getPlayer().equals(s) && c-1>=0){
+        if (disks[r][c - 1].getPlayer().equals(s) && c - 1 >= 0) {
             i++;
-            if(disks[r][c-2].getPlayer().equals(s) && c-2 >= 0){
+            if (disks[r][c - 2].getPlayer().equals(s) && c - 2 >= 0) {
                 i++;
-                if(disks[r][c-3].getPlayer().equals(s)&& c-3 >=0){
+                if (disks[r][c - 3].getPlayer().equals(s) && c - 3 >= 0) {
                     i++;
-                    if (i == 4){
+                    if (i == 4) {
                         return true;
                     }
                 }
             }
         }
-
 
 
         return false;
+    }
+
+    public void placetile(int r, int c) {
+        Drawable p1_tile = getResources().getDrawable(R.drawable.p1_tile_occupied);
+        Drawable p2_tile = getResources().getDrawable(R.drawable.p2_tile_occupied);
+        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
+        int counter = 1;
+        TextView myText = new TextView(this);
+
+        myText.setBackground(p1_tile);
+        myText.setGravity(Gravity.CENTER_HORIZONTAL);
+        myText.setHeight((int) getResources().getDimension(R.dimen.gridSize));
+        myText.setWidth((int) getResources().getDimension(R.dimen.gridSize));
+        GridLayout.Spec r_spec1 = GridLayout.spec(r, GridLayout.CENTER);
+        GridLayout.Spec c_spec1 = GridLayout.spec(c, GridLayout.CENTER);
+        GridLayout.LayoutParams par1 = new GridLayout.LayoutParams(r_spec1, c_spec1);
+        par1.setGravity(Gravity.CENTER_HORIZONTAL);
+        grid.addView(myText, par1);
+        //myText.draw(canvas1);
+
+        counter++;
     }
 
     @Override
@@ -328,10 +370,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // add other APIs and scopes here as needed
                 .build();
 
-        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
         Drawable border = getResources().getDrawable(R.drawable.tile_empty);
         Drawable p1_tile = getResources().getDrawable(R.drawable.p1_tile_occupied);
         Drawable p2_tile = getResources().getDrawable(R.drawable.p2_tile_occupied);
+        GridLayout grid = (GridLayout) findViewById(R.id.gridLayout);
         Button one = (Button) findViewById(R.id.one);
         Button two = (Button) findViewById(R.id.two);
         Button three = (Button) findViewById(R.id.three);
@@ -340,17 +382,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button six = (Button) findViewById(R.id.six);
         Button seven = (Button) findViewById(R.id.seven);
 
-        for(int i = 0; i < gameCols; i++) {
-            for(int j = 0; j < gameRows; j++) {
+        for (int i = 0; i < gameCols; i++) {
+            for (int j = 0; j < gameRows; j++) {
                 //ArrayList<Cell> tiles = gameLogic.getNonEmptyTiles();
 
-                int ri = j;
-                int ci = i;
-
+                int counter = 1;
                 TextView myText = new TextView(this);
 
                 //for(int k = 0; k < size; k++) {
-                    //tiles.size()
+                //tiles.size()
 
                     /*if(tiles.get(k).column != j && tiles.get(k).row == i) {
                         myText.setText(" ");
@@ -362,14 +402,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //}
                 myText.setTextSize(25);
 
-                //if()
+
                 myText.setBackground(border);
                 myText.setGravity(Gravity.CENTER_HORIZONTAL);
-                myText.setHeight(139);
-                myText.setWidth(139);
+                myText.setHeight((int) getResources().getDimension(R.dimen.gridSize));
+                myText.setWidth((int) getResources().getDimension(R.dimen.gridSize));
                 /* place the TextView at the desired row and column */
-                GridLayout.Spec r_spec = GridLayout.spec(ri, GridLayout.CENTER);
-                GridLayout.Spec c_spec = GridLayout.spec(ci, GridLayout.CENTER);
+                GridLayout.Spec r_spec = GridLayout.spec(j, GridLayout.CENTER);
+                GridLayout.Spec c_spec = GridLayout.spec(i, GridLayout.CENTER);
                 GridLayout.LayoutParams par = new GridLayout.LayoutParams(r_spec, c_spec);
                 par.setGravity(Gravity.CENTER_HORIZONTAL);
                 grid.addView(myText, par);
@@ -384,6 +424,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                 }*/
+
+
             }
         }
 
@@ -396,14 +438,86 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        /*one.setOnClickListener(new View.OnClickListener() {
+        one.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if()
-                placePiece();
+            public void onClick(View view) {
+                int counter = 0;
+                if (counter % 2 == 0) {
+                    mA.placetile(rowTwoStatus, 0);
+                    rowTwoStatus--;
+                }
             }
-        });*/
+        });
+
+        two.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int counter = 0;
+                if (counter % 2 == 0) {
+                    mA.placetile(rowThreeStatus, 0);
+                    rowThreeStatus--;
+                }
+            }
+        });
+
+        three.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int counter = 0;
+                if (counter % 2 == 0) {
+                    mA.placetile(rowOneStatus, 0);
+                    rowOneStatus--;
+                }
+            }
+        });
+
+        four.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int counter = 0;
+                if (counter % 2 == 0) {
+                    mA.placetile(rowFourStatus, 0);
+                    rowFourStatus--;
+                }
+            }
+        });
+
+        five.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int counter = 0;
+                if (counter % 2 == 0) {
+                    mA.placetile(rowFiveStatus, 0);
+                    rowFiveStatus--;
+                }
+            }
+        });
+
+        six.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int counter = 0;
+                if (counter % 2 == 0) {
+                    mA.placetile(rowSixStatus, 0);
+                    rowSixStatus--;
+                }
+            }
+        });
+
+        seven.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int counter = 0;
+                if (counter % 2 == 0) {
+                    mA.placetile(rowSevenStatus, 0);
+                    rowSevenStatus--;
+                }
+            }
+        });
     }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

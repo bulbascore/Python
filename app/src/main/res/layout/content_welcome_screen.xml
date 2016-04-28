@@ -17,7 +17,8 @@
         android:layout_height="wrap_content"
         android:text="Sign In"
         android:id="@+id/signIn"
-        android:layout_centerVertical="true"
+        android:layout_marginTop="45dp"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
     </com.google.android.gms.common.SignInButton>
 
@@ -27,7 +28,8 @@
         android:text="Sign Out"
         android:id="@+id/signOut"
         android:layout_below="@+id/signIn"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
 
     <Button
         android:layout_width="wrap_content"
@@ -35,7 +37,8 @@
         android:text="Achievements"
         android:id="@+id/achievements"
         android:layout_below="@+id/signOut"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
 
     <Button
         android:layout_width="wrap_content"
@@ -43,7 +46,8 @@
         android:text="Play"
         android:id="@+id/playGame"
         android:layout_below="@+id/achievements"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
 
 
 </RelativeLayout>
