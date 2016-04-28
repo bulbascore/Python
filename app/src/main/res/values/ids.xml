@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_id">431812106491</string>
+    <string name="beginner">CgkI-7GH0MgMEAIQAQ</string>
+    <string name="better">CgkI-7GH0MgMEAIQAg</string>
+    <string name="good">CgkI-7GH0MgMEAIQAw</string>
+    <string name="unstoppable">CgkI-7GH0MgMEAIQBA</string>
+    <string name="godlike">CgkI-7GH0MgMEAIQBQ</string>
 </resources>

@@ -1,5 +1,6 @@
 package edu.gvsu.cis.radeckia.python;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.TextView;
@@ -24,13 +26,25 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+
 import java.util.Date;
 
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesActivityResultCodes;
+import com.google.android.gms.games.GamesStatusCodes;
+import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
+import com.google.android.gms.games.multiplayer.realtime.Room;
+import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.google.android.gms.games.multiplayer.realtime.RoomEntityCreator;
+import com.google.android.gms.games.multiplayer.realtime.RoomRef;
+import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
+import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
+
 import edu.gvsu.cis.radeckia.python.Main;
 import edu.gvsu.cis.radeckia.python.Disks;
+import edu.gvsu.cis.radeckia.python.Player;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
 
     private int gameCols = 7;
@@ -38,7 +52,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GameLogic gameLogic;
     private long reset = 0;
     private GoogleApiClient mClient;
+    private String mRoomId = "";
+    private RoomUpdateListener mListener;
+    private RealTimeMessageReceivedListener realTimeListener;
+    private RoomStatusUpdateListener mUpdateListener;
     private static int RC_SIGN_IN = 9001;
+    private final static int RC_WAITING_ROOM = 10002;
     private boolean mResolvingConnectionFailure = false;
     //private boolean mAutoStartSignInFlow = true;
     private boolean mSignInClicked = false;
@@ -58,6 +77,33 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             reset = 0;
         }
     }*/
+
+    private RoomConfig.Builder makeBasicRoomConfigBuilder() {
+        RoomConfig.Builder builder = RoomConfig.builder(mListener);
+        builder.setMessageReceivedListener(realTimeListener);
+        builder.setRoomStatusUpdateListener(mUpdateListener);
+
+        return builder;
+    }
+
+    private void startQuickGame() {
+        // auto-match criteria to invite one random automatch opponent.
+        // You can also specify more opponents (up to 3).
+        Bundle am = RoomConfig.createAutoMatchCriteria(1, 1, 0);
+
+        // build the room config:
+        RoomConfig.Builder roomConfigBuilder = makeBasicRoomConfigBuilder();
+        roomConfigBuilder.setAutoMatchCriteria(am);
+        RoomConfig roomConfig = roomConfigBuilder.build();
+
+        // create room:
+        Games.RealTimeMultiplayer.create(mClient, roomConfig);
+
+        // prevent screen from sleeping during handshake
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // go to game screen
+    }
 
     public void placePiece(String Player, int col){
         int i = col;
@@ -90,9 +136,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
     public void endGame(){
+        int GAMES_WON = 0;
         Intent launchme = new Intent(MainActivity.this, ResultsScreen.class);
-        launchme.putExtra("winner", "Easy");
-        startActivity(launchme);
+        launchme.putExtra("winner", GAMES_WON);
+        startActivityForResult(launchme, GAMES_WON);
     }
 
     //returns how many pieces there are in a row.
@@ -327,16 +374,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 par.setGravity(Gravity.CENTER_HORIZONTAL);
                 grid.addView(myText, par);
 
-                for(int m = 0; m < cols-1; m++) {
+                /*for(int m = 0; m < cols-1; m++) {
                     for(int n = 0; n < rows-1; n++) {
-                        if(disks[m][n].getPlayer() == player1.name()) {
+                        if(disks[m][n].getPlayer().equals(player1.name())) {
                             myText.setBackground(p1_tile);
                         }
-                        else if(disks[m][n].getPlayer() == player2.name()) {
+                        else if(disks[m][n].getPlayer().equals(player2.name())) {
                             myText.setBackground(p2_tile);
                         }
                     }
-                }
+                }*/
             }
         }
 
@@ -349,25 +396,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
-        one.setOnClickListener(new View.OnClickListener() {
+        /*one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if()
                 placePiece();
             }
-        });
+        });*/
     }
-
-    /*@Override
-    protected void onStart() {
-        super.onStart();
-        mClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mClient.disconnect();
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -466,19 +502,69 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 //BaseGameUtils.showActivityResultError(this,
                 //        requestCode, resultCode, R.string.on_signIn_failed);
+
+                if (requestCode == RC_WAITING_ROOM) {
+                    if (resultCode == Activity.RESULT_OK) {
+                        // (start game)
+                    }
+                    else if (resultCode == Activity.RESULT_CANCELED) {
+                        // Waiting room was dismissed with the back button. The meaning of this
+                        // action is up to the game. You may choose to leave the room and cancel the
+                        // match, or do something else like minimize the waiting room and
+                        // continue to connect in the background.
+
+                        // in this example, we take the simple approach and just leave the room:
+                        Games.RealTimeMultiplayer.leave(mClient, null, mRoomId);
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    }
+                    else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
+                        // player wants to leave the room.
+                        Games.RealTimeMultiplayer.leave(mClient, null, mRoomId);
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    }
+                }
             }
         }
     }
 
-    /*@Override
-    public void onSignInPressed() {
-        mSignInClicked = true;
-        SharedPreferences pref = PreferenceManager;
-        mClient.connect();
+    @Override
+    public void onClick(View v) {
+
     }
 
-    @Override
-    public void onSignOutPressed() {
-        mSignInClicked = false;
-    }*/
+    public void onRoomCreated(int statusCode, Room room) {
+        if (statusCode != GamesStatusCodes.STATUS_OK) {
+            // let screen go to sleep
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            // show error message, return to main screen.
+
+            // get waiting room intent
+            Intent i = Games.RealTimeMultiplayer.getWaitingRoomIntent(mClient, room, 2);
+            startActivityForResult(i, RC_WAITING_ROOM);
+        }
+    }
+
+    public void onJoinedRoom(int statusCode, Room room) {
+        if (statusCode != GamesStatusCodes.STATUS_OK) {
+            // let screen go to sleep
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            // show error message, return to main screen.
+
+            // get waiting room intent
+            Intent i = Games.RealTimeMultiplayer.getWaitingRoomIntent(mClient, room, 2);
+            startActivityForResult(i, RC_WAITING_ROOM);
+        }
+    }
+
+    public void onRoomConnected(int statusCode, Room room) {
+        if (statusCode != GamesStatusCodes.STATUS_OK) {
+            // let screen go to sleep
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            // show error message, return to main screen.
+        }
+    }
+
 }

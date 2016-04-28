@@ -12,4 +12,11 @@
     tools:context="edu.gvsu.cis.radeckia.python.ResultsScreen"
     tools:showIn="@layout/activity_results_screen">
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Return"
+        android:id="@+id/return_button"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

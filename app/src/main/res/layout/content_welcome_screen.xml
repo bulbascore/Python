@@ -17,9 +17,33 @@
         android:layout_height="wrap_content"
         android:text="Sign In"
         android:id="@+id/signIn"
-        android:layout_marginBottom="54dp"
-        android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true">
     </com.google.android.gms.common.SignInButton>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign Out"
+        android:id="@+id/signOut"
+        android:layout_below="@+id/signIn"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Achievements"
+        android:id="@+id/achievements"
+        android:layout_below="@+id/signOut"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play"
+        android:id="@+id/playGame"
+        android:layout_below="@+id/achievements"
+        android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>
