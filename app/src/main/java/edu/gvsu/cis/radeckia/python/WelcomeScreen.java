@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,6 +19,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.achievement.*;
 
 public class WelcomeScreen extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
 GoogleApiClient.OnConnectionFailedListener {
@@ -41,6 +43,8 @@ GoogleApiClient.OnConnectionFailedListener {
         //mGoogleApiClient.connect();
         setContentView(R.layout.activity_welcome_screen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Connect 4");
         signIn = (SignInButton) findViewById(R.id.signIn);
         signOut = (Button) findViewById(R.id.signOut);
         achievements = (Button) findViewById(R.id.achievements);
@@ -54,15 +58,6 @@ GoogleApiClient.OnConnectionFailedListener {
 
                 .build();
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         playGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +112,7 @@ GoogleApiClient.OnConnectionFailedListener {
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()) {
+       /* switch(v.getId()) {
             case R.id.playGame:
                 Intent launchGame = new Intent(WelcomeScreen.this, MainActivity.class);
                 startActivityForResult(launchGame, GAMES_WON);
@@ -142,7 +137,7 @@ GoogleApiClient.OnConnectionFailedListener {
             case R.id.achievements:
                 startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), REQUEST_ACHIEVEMENTS);
                 break;
-        }
+        }*/
 
     }
 
@@ -223,5 +218,19 @@ GoogleApiClient.OnConnectionFailedListener {
         super.onDestroy();
         SharedPreferences.Editor ped = prefs.edit();
         ped.commit();
+    }
+
+    private Intent createImageShareIntent (String imgName) {
+    /* ACTION_SEND = share */
+        Intent shareGame = new Intent(Intent.ACTION_SEND);
+        return shareGame;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent shareGame = new Intent();
+        startActivity (shareGame);
+        return super.onOptionsItemSelected(item);
+
     }
 }

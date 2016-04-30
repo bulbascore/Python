@@ -3,20 +3,15 @@ package edu.gvsu.cis.radeckia.python;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Menu;
@@ -27,11 +22,8 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-
-import java.util.Date;
 
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
@@ -39,21 +31,19 @@ import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.multiplayer.realtime.RealTimeMessageReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
-import com.google.android.gms.games.multiplayer.realtime.RoomEntityCreator;
-import com.google.android.gms.games.multiplayer.realtime.RoomRef;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateListener;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
 
-import edu.gvsu.cis.radeckia.python.Main;
-import edu.gvsu.cis.radeckia.python.Disks;
-import edu.gvsu.cis.radeckia.python.Player;
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+    private int GAMES_WON = 0;
+
     private Disks d;
     private Main m = new Main();
-    private MainActivity mA = new MainActivity();
+    //private MainActivity mA = new MainActivity();
     private int gameCols = 7;
     private int gameRows = 6;
     private GameLogic gameLogic;
@@ -362,6 +352,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Connect 4");
+        setSupportActionBar(toolbar);
 
         mClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -433,8 +425,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent launchGame = new Intent(MainActivity.this, WelcomeScreen.class);
+                startActivityForResult(launchGame, GAMES_WON);
             }
         });
 
@@ -443,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 int counter = 0;
                 if (counter % 2 == 0) {
-                    mA.placetile(rowTwoStatus, 0);
+                    //mA.placetile(rowTwoStatus, 0);
                     rowTwoStatus--;
                 }
             }
@@ -454,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 int counter = 0;
                 if (counter % 2 == 0) {
-                    mA.placetile(rowThreeStatus, 0);
+                    //mA.placetile(rowThreeStatus, 0);
                     rowThreeStatus--;
                 }
             }
@@ -465,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 int counter = 0;
                 if (counter % 2 == 0) {
-                    mA.placetile(rowOneStatus, 0);
+                    //mA.placetile(rowOneStatus, 0);
                     rowOneStatus--;
                 }
             }
@@ -476,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 int counter = 0;
                 if (counter % 2 == 0) {
-                    mA.placetile(rowFourStatus, 0);
+                    //mA.placetile(rowFourStatus, 0);
                     rowFourStatus--;
                 }
             }
@@ -487,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 int counter = 0;
                 if (counter % 2 == 0) {
-                    mA.placetile(rowFiveStatus, 0);
+                    //mA.placetile(rowFiveStatus, 0);
                     rowFiveStatus--;
                 }
             }
@@ -498,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 int counter = 0;
                 if (counter % 2 == 0) {
-                    mA.placetile(rowSixStatus, 0);
+                    //mA.placetile(rowSixStatus, 0);
                     rowSixStatus--;
                 }
             }
@@ -509,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View view) {
                 int counter = 0;
                 if (counter % 2 == 0) {
-                    mA.placetile(rowSevenStatus, 0);
+                    //mA.placetile(rowSevenStatus, 0);
                     rowSevenStatus--;
                 }
             }
@@ -532,9 +524,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        Intent shareIt = createShareIntent("share_game");
+        startActivity (shareIt);
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_share) {
             return true;
         }
 
@@ -680,5 +673,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             // show error message, return to main screen.
         }
     }
+
+
+    private Intent createShareIntent (String name)
+    {
+    /* ACTION_SEND = share */
+        Intent shareGame = new Intent (Intent.ACTION_SEND);
+
+    /* attach the file to the share intent */
+        shareGame.putExtra (Intent.EXTRA_TEXT, "Play this game (Once it's finished)!");
+        shareGame.setType ("text/plain");
+        return shareGame;
+    }
+
 
 }
